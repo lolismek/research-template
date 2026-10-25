@@ -3,8 +3,9 @@
 Scaffolding for a research project driven by Claude Code with notebooks on a Slurm GPU cluster.
 Three modes of work share one layout and one Python library:
 
-1. **interactive**: you and the agent in a JupyterLab notebook, kernel on a GPU node;
-2. **autoresearch**: an agent alone, one goal, its own notebook job, numbered notebooks;
+1. **interactive**: you and the agent in a JupyterLab notebook, everything on one GPU node reached
+   through a VS Code tunnel (Claude Code panel beside JupyterLab in VS Code's Simple Browser);
+2. **autoresearch**: an agent alone, one goal, its own job with JupyterLab + headless Claude Code;
 3. **batch**: scripts submitted as Slurm jobs for long or multi-GPU work.
 
 ## Stamp a new project
@@ -35,6 +36,13 @@ Claude Code itself:
 
     curl -fsSL https://claude.ai/install.sh | bash
 
+VS Code CLI (for the tunnel), on scratch, logged in once with GitHub:
+
+    curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" | tar xz -C /scratch/hewittlab/aij2115/bin
+    /scratch/hewittlab/aij2115/bin/code tunnel user login --provider github --cli-data-dir /scratch/hewittlab/aij2115/vscode/cli
+
+Compute nodes allow no inbound ssh, so the tunnel (outbound only) is the way into a job's node.
+
 ## Layout of a stamped project
 
     CLAUDE.md        how to work here (project facts + the conventions below)
@@ -42,8 +50,8 @@ Claude Code itself:
     lib/             the one Python library; notebooks and scripts both import it
     notebooks/       interactive sessions, YYYY-MM-DD_short-label.ipynb
     auto/<run>/      autoresearch runs: GOAL.md, LOG.md, notebooks/NN_YYYY-MM-DD_label.ipynb, jobs/
-    scripts/         batch entry points and the notebook-session helpers
-    slurm/           sbatch files
+    scripts/         batch entry points and the session helpers (nb_start/nb_stop/auto_start/gpus)
+    slurm/           sbatch files (notebook.sbatch, auto.sbatch, job.sbatch, gpu_guard.sh)
     .nb/             (ignored) URL and token of the running notebook server
 
 ## One-shot cluster bootstrap

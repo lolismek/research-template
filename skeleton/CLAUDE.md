@@ -11,12 +11,15 @@ Research project stamped from `~/research-template`. Read `RESEARCH.md` before s
 - Known hazards: see `slurm/gpu_guard.sh` (occupied or faulty cards get resubmitted).
 
 ## Three modes
-1. **Interactive notebook** (user + agent). `scripts/nb_start.sh` -> JupyterLab in a one-GPU job,
-   `.nb/current.env` holds URL + token, the `jupyter` MCP server uses it. Notebooks in `notebooks/`,
+1. **Interactive notebook** (user + agent). `scripts/nb_start.sh` -> one-GPU job running JupyterLab
+   (localhost) and a VS Code tunnel `aics-nb`. The user attaches VS Code to the tunnel, so Claude Code,
+   the `jupyter` MCP server (reads `.nb/current.env`), the kernel and the browser are all on that node.
+   Notebooks in `notebooks/`,
    one per question, `YYYY-MM-DD_short-label.ipynb`. Cell 1 is imports + loading, run once.
    Markdown cell at the top states the question; a closing markdown cell states what was found.
 2. **Autoresearch** (agent alone). `auto/<run>/` with `GOAL.md`, `LOG.md`, `notebooks/NN_YYYY-MM-DD_label.ipynb`,
-   `jobs/`. Own notebook job via `scripts/nb_start.sh --name <run>`; never the user's kernel.
+   `jobs/`. Launched with `scripts/auto_start.sh <run>`: a job running its own JupyterLab plus Claude Code
+   headless, so it keeps going with the laptop closed. Never the user's kernel.
 3. **Batch** (long or multi-GPU). Thin script in `scripts/` importing `lib/`, sbatch copied from
    `slurm/job.sbatch`, outputs to `runs/<date>_<label>/` on scratch with `config.json`.
    Results are loaded into a notebook for inspection, not pasted into chat.

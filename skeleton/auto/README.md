@@ -5,4 +5,5 @@ Autoresearch runs, one folder per goal:
     auto/<run>/notebooks/NN_YYYY-MM-DD_label.ipynb   one per attempt, numbered so they sort
     auto/<run>/jobs/                            sbatch files an attempt submitted, named after the attempt
 
-Each run uses its own notebook job (`scripts/nb_start.sh --name <run>`), never the user's kernel.
+Write GOAL.md, then `scripts/auto_start.sh <run>` submits a job that runs JupyterLab and Claude Code headless
+on a GPU node (laptop can be closed). Progress: `auto/<run>/LOG.md`, transcript: `auto/<run>/claude-<jobid>.log`.

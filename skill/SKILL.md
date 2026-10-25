@@ -20,13 +20,16 @@ engineering projects; it is for experiment-driven research only.
 
 ## The three modes
 
-- **interactive**: `scripts/nb_start.sh` submits a one-GPU Slurm job running JupyterLab and
-  writes `.nb/current.env`. The `jupyter` MCP server (see `.mcp.json`) reads that file and
-  gives you insert/execute/read tools on the live notebook. One notebook per question in
+- **interactive**: `scripts/nb_start.sh` submits a one-GPU Slurm job running JupyterLab on
+  localhost plus a VS Code tunnel named `aics-nb`, and writes `.nb/current.env`. The user attaches
+  VS Code to that tunnel, so you (Claude Code), the `jupyter` MCP server (see `.mcp.json`, reads the
+  env file), the kernel and the user's browser view all sit on the same node. The MCP server gives
+  you insert/execute/read tools on the live notebook. One notebook per question in
   `notebooks/`, named `YYYY-MM-DD_short-label.ipynb`. Cell 1 = imports and loading, run once.
   Run a few cells, discuss, continue. Edit an existing notebook rather than making a near copy.
 - **autoresearch**: `auto/<run>/` with `GOAL.md`, `LOG.md`, `notebooks/NN_YYYY-MM-DD_label.ipynb`,
-  `jobs/`. Own notebook job (`scripts/nb_start.sh --name <run>`), never the user's kernel.
+  `jobs/`. Launched as its own job with `scripts/auto_start.sh <run>` (JupyterLab + Claude Code
+  headless on a GPU node, runs with the laptop closed), never the user's kernel.
   One LOG.md entry per attempt. Propose one line for RESEARCH.md at the end.
 - **batch**: thin script in `scripts/` importing `lib/`, sbatch in `slurm/` (copy
   `slurm/job.sbatch`), outputs under `runs/<date>_<label>/` on scratch with a `config.json`.

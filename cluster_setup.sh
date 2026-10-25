@@ -18,6 +18,11 @@ echo "== jupyter-mcp-server into env mcp"
 /scratch/hewittlab/aij2115/envs/mcp/bin/pip install -q "jupyter-mcp-server>=2.2"
 /scratch/hewittlab/aij2115/envs/mcp/bin/jupyter-mcp-server --help | head -3
 
+echo "== VS Code CLI (tunnel) on scratch"
+mkdir -p /scratch/hewittlab/aij2115/bin /scratch/hewittlab/aij2115/vscode/cli
+[ -x /scratch/hewittlab/aij2115/bin/code ] || curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" | tar xz -C /scratch/hewittlab/aij2115/bin
+/scratch/hewittlab/aij2115/bin/code --version | head -1
+
 echo "== Claude Code"
 if ! command -v claude >/dev/null && [ ! -x ~/.local/bin/claude ]; then
   curl -fsSL https://claude.ai/install.sh | bash
@@ -34,5 +39,5 @@ fi
 mkdir -p "$CLUSTER_DIR"/{runs,data,slurm_logs}
 echo
 echo "done. Next, on the login node:"
-echo "  cd $CLUSTER_DIR && ~/.local/bin/claude      # first run: log in"
-echo "  scripts/nb_start.sh                           # start the notebook job; open the printed URL in VS Code's Simple Browser"
+echo "  /scratch/hewittlab/aij2115/bin/code tunnel user login --provider github --cli-data-dir /scratch/hewittlab/aij2115/vscode/cli   # once"
+echo "  cd $CLUSTER_DIR && scripts/nb_start.sh        # start the notebook job; attach VS Code to tunnel aics-nb, log in to claude there once"
