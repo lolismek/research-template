@@ -10,7 +10,7 @@ CONDA=~/miniforge3/bin/conda
 PY=~/miniforge3/envs/$ENV/bin
 
 echo "== JupyterLab + collaboration into env $ENV"
-$PY/pip install -q "jupyterlab>=4.4" "jupyter-collaboration>=4" jupyter-mcp-tools ipykernel matplotlib
+$PY/pip install -q "jupyterlab>=4.4" "jupyter-collaboration>=5" jupyter-mcp-tools ipykernel matplotlib
 $PY/python -c "import jupyterlab, jupyter_collaboration; print('jupyterlab', jupyterlab.__version__)"
 
 echo "== jupyter-mcp-server into env mcp"
