@@ -39,5 +39,5 @@ fi
 mkdir -p "$CLUSTER_DIR"/{runs,data,slurm_logs}
 echo
 echo "done. Next, on the login node:"
-echo "  VSCODE_CLI_USE_FILE_KEYCHAIN=1 /scratch/hewittlab/aij2115/bin/code tunnel user login --provider github --cli-data-dir /scratch/hewittlab/aij2115/vscode/cli   # once"
-echo "  cd $CLUSTER_DIR && scripts/nb_start.sh        # start the notebook job; attach VS Code to tunnel aics-nb, log in to claude there once"
+echo "  cd $CLUSTER_DIR && scripts/nb_start.sh        # start the notebook job; first time on a node: enter the printed GitHub device code"
+echo "  then attach VS Code to the printed tunnel (aics-nb-<node>) and log in to claude there once"

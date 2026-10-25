@@ -21,7 +21,7 @@ engineering projects; it is for experiment-driven research only.
 ## The three modes
 
 - **interactive**: `scripts/nb_start.sh` submits a one-GPU Slurm job running JupyterLab on
-  localhost plus a VS Code tunnel named `aics-nb`, and writes `.nb/current.env`. The user attaches
+  localhost plus a VS Code tunnel named `aics-nb-<node number>`, and writes `.nb/current.env`. The user attaches
   VS Code to that tunnel, so you (Claude Code), the `jupyter` MCP server (see `.mcp.json`, reads the
   env file), the kernel and the user's browser view all sit on the same node. The MCP server gives
   you insert/execute/read tools on the live notebook. One notebook per question in

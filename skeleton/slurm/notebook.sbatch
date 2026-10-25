@@ -14,7 +14,11 @@ source slurm/gpu_guard.sh
 export HF_HOME=/scratch/hewittlab/aij2115/hf_cache
 PY=~/miniforge3/envs/{{CONDA_ENV}}/bin
 VSC=/scratch/hewittlab/aij2115/vscode
-export VSCODE_CLI_USE_FILE_KEYCHAIN=1   # store/read the tunnel login in $VSC/cli/token.json, not a per-node keyring
+NODE=$(hostname -s)
+# The tunnel login token is encrypted with a machine-bound key, so each node keeps its own CLI data dir and
+# its own tunnel name (aics-nb-1, aics-nb-2, ...). First job on a node prints a GitHub device code to log in.
+export VSCODE_CLI_USE_FILE_KEYCHAIN=1
+TUNNEL_NAME=${NB_TUNNEL:+$NB_TUNNEL-${NODE##*-}}
 PORT=${NB_PORT:-0}
 if [ "$PORT" = 0 ]; then
   PORT=$($PY/python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1])")
@@ -26,15 +30,16 @@ NB_HOST=$(hostname)
 NB_PORT=$PORT
 JUPYTER_URL=http://127.0.0.1:$PORT
 JUPYTER_TOKEN=$NB_TOKEN
-NB_TUNNEL=${NB_TUNNEL:-}
+TUNNEL_NAME=$TUNNEL_NAME
 ENV
 echo "JupyterLab on $(hostname):$PORT (job $SLURM_JOB_ID)"
 $PY/jupyter lab --no-browser --ip 127.0.0.1 --port "$PORT" \
   --IdentityProvider.token "$NB_TOKEN" --ServerApp.root_dir "$PWD" &
 JL=$!
 if [ -n "${NB_TUNNEL:-}" ]; then
-  echo "VS Code tunnel '$NB_TUNNEL'"
-  /scratch/hewittlab/aij2115/bin/code tunnel --accept-server-license-terms --name "$NB_TUNNEL" \
-    --cli-data-dir $VSC/cli --server-data-dir $VSC/server --extensions-dir $VSC/extensions &
+  echo "VS Code tunnel '$TUNNEL_NAME'"
+  mkdir -p $VSC/cli-$NODE
+  /scratch/hewittlab/aij2115/bin/code tunnel --accept-server-license-terms --name "$TUNNEL_NAME" \
+    --cli-data-dir $VSC/cli-$NODE --server-data-dir $VSC/server --extensions-dir $VSC/extensions &
 fi
 wait $JL

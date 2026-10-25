@@ -36,12 +36,13 @@ Claude Code itself:
 
     curl -fsSL https://claude.ai/install.sh | bash
 
-VS Code CLI (for the tunnel), on scratch, logged in once with GitHub:
+VS Code CLI (for the tunnel), on scratch:
 
     curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" | tar xz -C /scratch/hewittlab/aij2115/bin
-    VSCODE_CLI_USE_FILE_KEYCHAIN=1 /scratch/hewittlab/aij2115/bin/code tunnel user login --provider github --cli-data-dir /scratch/hewittlab/aij2115/vscode/cli
 
-Compute nodes allow no inbound ssh, so the tunnel (outbound only) is the way into a job's node.
+Compute nodes allow no inbound ssh, so the tunnel (outbound only) is the way into a job's node. The tunnel's
+GitHub login token is encrypted per machine, so the first notebook job on each node prints a one-time device
+code (`scripts/nb_start.sh` shows it); tunnels are named `aics-nb-<node number>`.
 
 ## Layout of a stamped project
 

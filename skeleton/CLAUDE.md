@@ -12,7 +12,7 @@ Research project stamped from `~/research-template`. Read `RESEARCH.md` before s
 
 ## Three modes
 1. **Interactive notebook** (user + agent). `scripts/nb_start.sh` -> one-GPU job running JupyterLab
-   (localhost) and a VS Code tunnel `aics-nb`. The user attaches VS Code to the tunnel, so Claude Code,
+   (localhost) and a VS Code tunnel `aics-nb-<node>`. The user attaches VS Code to the tunnel, so Claude Code,
    the `jupyter` MCP server (reads `.nb/current.env`), the kernel and the browser are all on that node.
    Notebooks in `notebooks/`,
    one per question, `YYYY-MM-DD_short-label.ipynb`. Cell 1 is imports + loading, run once.
