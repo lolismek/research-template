@@ -14,9 +14,9 @@ $PY/pip install -q "jupyterlab>=4.4" "jupyter-collaboration>=5" jupyter-mcp-tool
 $PY/python -c "import jupyterlab, jupyter_collaboration; print('jupyterlab', jupyterlab.__version__)"
 
 echo "== jupyter-mcp-server into env mcp"
-[ -d ~/miniforge3/envs/mcp ] || $CONDA create -y -q -n mcp python=3.12
-~/miniforge3/envs/mcp/bin/pip install -q "jupyter-mcp-server>=2.2"
-~/miniforge3/envs/mcp/bin/jupyter-mcp-server --help | head -3
+[ -d /scratch/hewittlab/aij2115/envs/mcp ] || $CONDA create -y -q -p /scratch/hewittlab/aij2115/envs/mcp python=3.12
+/scratch/hewittlab/aij2115/envs/mcp/bin/pip install -q "jupyter-mcp-server>=2.2"
+/scratch/hewittlab/aij2115/envs/mcp/bin/jupyter-mcp-server --help | head -3
 
 echo "== Claude Code"
 if ! command -v claude >/dev/null && [ ! -x ~/.local/bin/claude ]; then
@@ -25,11 +25,11 @@ fi
 ~/.local/bin/claude --version || true
 
 echo "== repos"
-[ -d ~/research-template ] || git clone -q https://github.com/lolismek/research-template ~/research-template
+TPL=/scratch/hewittlab/aij2115/research-template; [ -d $TPL ] || git clone -q git@github.com:lolismek/research-template $TPL
 mkdir -p ~/.claude/skills
-ln -sfn ~/research-template/skill ~/.claude/skills/research-project
+ln -sfn $TPL/skill ~/.claude/skills/research-project
 if [ ! -d "$CLUSTER_DIR" ]; then
-  git clone -q "https://github.com/lolismek/$NAME" "$CLUSTER_DIR"
+  git clone -q "git@github.com:lolismek/$NAME" "$CLUSTER_DIR"
 fi
 mkdir -p "$CLUSTER_DIR"/{runs,data,slurm_logs}
 echo

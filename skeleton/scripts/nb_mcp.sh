@@ -9,4 +9,4 @@ if [ ! -f "$ENVF" ]; then
 fi
 . "$ENVF"
 export JUPYTER_URL JUPYTER_TOKEN ALLOW_IMG_OUTPUT=true
-exec ~/miniforge3/envs/mcp/bin/jupyter-mcp-server --transport stdio
+exec /scratch/hewittlab/aij2115/envs/mcp/bin/jupyter-mcp-server --transport stdio

@@ -27,7 +27,7 @@ In the project's conda env:
 
     pip install jupyterlab jupyter-collaboration jupyter-mcp-tools ipykernel
 
-In a separate env named `mcp` (python >= 3.10):
+In a separate env on scratch, `/scratch/hewittlab/aij2115/envs/mcp` (python >= 3.10):
 
     pip install jupyter-mcp-server
 
@@ -48,8 +48,8 @@ Claude Code itself:
 
 ## One-shot cluster bootstrap
 
-    curl -fsSL https://raw.githubusercontent.com/lolismek/research-template/main/cluster_setup.sh -o /tmp/cs.sh
-    bash /tmp/cs.sh <project> [conda_env] [cluster_dir]
+    git clone git@github.com:lolismek/research-template /scratch/hewittlab/aij2115/research-template
+    /scratch/hewittlab/aij2115/research-template/cluster_setup.sh <project> [conda_env] [cluster_dir]
 
 (or clone this repo there and run `./cluster_setup.sh`). Repos are private, so `gh auth login` or an ssh key
 for GitHub is needed on the cluster first.
