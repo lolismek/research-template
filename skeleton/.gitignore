@@ -1,0 +1,10 @@
+.nb/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/
+runs/
+slurm_logs/
+*.pt
+*.safetensors
+.DS_Store
