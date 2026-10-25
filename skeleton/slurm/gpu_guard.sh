@@ -5,8 +5,9 @@
 # Occupied card: hold this (unusable) allocation for a while so Slurm does not hand us the same
 # card straight back, then resubmit with the same exclusions. Faulty card (CUDA health check
 # fails, e.g. uncorrectable ECC): resubmit with this node added to the exclusions.
-# nvidia-smi may print warnings (e.g. a driver/library version note) before the numbers; keep numeric lines only.
-used=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | tr -d ' ' | grep -E '^[0-9]+$' | sort -n | tail -1)
+# Memory in use on our card via the CUDA runtime (nvidia-smi/NVML is broken on some nodes, e.g. a
+# driver/library mismatch on csrtx6000-1 while CUDA itself works). Empty if CUDA fails -> health check below.
+used=$(~/miniforge3/envs/{{CONDA_ENV}}/bin/python -c "import torch; f,t=torch.cuda.mem_get_info(); print((t-f)//2**20)" 2>/dev/null)
 if [ "${used:-0}" -gt 2000 ]; then
   echo "GPU on $(hostname) already has ${used} MiB in use by a foreign process; waiting 10 min then resubmitting${EXCLUDE:+ with --exclude=$EXCLUDE}"
   sleep 600

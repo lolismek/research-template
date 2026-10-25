@@ -14,6 +14,7 @@ source slurm/gpu_guard.sh
 export HF_HOME=/scratch/hewittlab/aij2115/hf_cache
 PY=~/miniforge3/envs/{{CONDA_ENV}}/bin
 VSC=/scratch/hewittlab/aij2115/vscode
+export VSCODE_CLI_USE_FILE_KEYCHAIN=1   # store/read the tunnel login in $VSC/cli/token.json, not a per-node keyring
 PORT=${NB_PORT:-0}
 if [ "$PORT" = 0 ]; then
   PORT=$($PY/python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1])")
