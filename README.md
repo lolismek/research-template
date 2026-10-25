@@ -45,3 +45,11 @@ Claude Code itself:
     scripts/         batch entry points and the notebook-session helpers
     slurm/           sbatch files
     .nb/             (ignored) URL and token of the running notebook server
+
+## One-shot cluster bootstrap
+
+    curl -fsSL https://raw.githubusercontent.com/lolismek/research-template/main/cluster_setup.sh -o /tmp/cs.sh
+    bash /tmp/cs.sh <project> [conda_env] [cluster_dir]
+
+(or clone this repo there and run `./cluster_setup.sh`). Repos are private, so `gh auth login` or an ssh key
+for GitHub is needed on the cluster first.
