@@ -15,8 +15,10 @@ use it.
     ~/research-template/new_project.sh <name> [conda_env] [cluster_dir]
 
 Then fill in `CLAUDE.md` (project facts) and `RESEARCH.md` (what is known, with pointers),
-create a private GitHub repo and push, clone on the cluster. Do not reuse this for software
-engineering projects; it is for experiment-driven research only.
+create a private GitHub repo and push, clone on the cluster. The full order of operations, with
+the checks for each step, what needs the human, and the pitfalls already hit, is
+`~/research-template/INSTALL.md`; follow it when installing on a new project, cluster or laptop.
+Do not reuse this for software engineering projects; it is for experiment-driven research only.
 
 ## The three modes
 

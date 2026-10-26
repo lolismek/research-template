@@ -25,7 +25,7 @@ work dir, and makes the first commit. The repo lives in three places: the laptop
     lib/paths.py     where data, caches and runs live on the cluster; nothing is hard-coded in notebooks
     notebooks/       interactive sessions, one notebook per question, YYYY-MM-DD_short-label.ipynb
     auto/<run>/      autoresearch runs: GOAL.md, LOG.md, notebooks/NN_YYYY-MM-DD_label.ipynb, jobs/
-    scripts/         batch and sidecar entry points, plus the session helpers (nb_start, nb_stop, auto_start, gpus)
+    scripts/         batch and sidecar entry points, plus the session helpers (nb_start, nb_stop, nb_check, auto_start, gpus)
     slurm/           sbatch files (notebook.sbatch, auto.sbatch, job.sbatch) and gpu_guard.sh
     data/ logs/ runs/   (ignored) sidecar caches and logs, batch outputs; all on scratch
     .nb/             (ignored) URL, token and Jupyter state of each running notebook server
@@ -98,6 +98,9 @@ few cells; human review as the bottleneck, so results stay inline as plots and s
 autoresearch mode with its own notebooks and log; a shared record of what is known (`RESEARCH.md`).
 
 ## How to use it
+
+`INSTALL.md` is the step-by-step version of this section, written for an agent doing the setup, with the
+checks for each step and the pitfalls we hit.
 
 ### Stamp a new project
 
