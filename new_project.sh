@@ -10,7 +10,7 @@ DEST=~/$NAME
 [ -e "$DEST" ] && { echo "$DEST exists"; exit 1; }
 cp -R "$HERE/skeleton" "$DEST"
 cd "$DEST"
-for f in CLAUDE.md RESEARCH.md scripts/*.sh slurm/*.sbatch slurm/*.sh .mcp.json; do
+for f in CLAUDE.md RESEARCH.md scripts/*.sh slurm/*.sbatch slurm/*.sh lib/*.py .mcp.json; do
   sed -i.bak -e "s|{{PROJECT}}|$NAME|g" -e "s|{{CONDA_ENV}}|$ENV|g" -e "s|{{CLUSTER_DIR}}|$CLUSTER_DIR|g" "$f"
   rm -f "$f.bak"
 done

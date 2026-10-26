@@ -27,6 +27,9 @@ engineering projects; it is for experiment-driven research only.
   you insert/execute/read tools on the live notebook. One notebook per question in
   `notebooks/`, named `YYYY-MM-DD_short-label.ipynb`. Cell 1 = imports and loading, run once.
   Run a few cells, discuss, continue. Edit an existing notebook rather than making a near copy.
+  Short compute (< ~30 min) that would block the kernel runs as a **sidecar**: a thin `scripts/`
+  script started as a background process on the notebook node's own GPU, caching to `data/<topic>/`
+  with its full config and logging to `logs/`; the notebook loads the cache. Longer work is batch.
 - **autoresearch**: `auto/<run>/` with `GOAL.md`, `LOG.md`, `notebooks/NN_YYYY-MM-DD_label.ipynb`,
   `jobs/`. Launched as its own job with `scripts/auto_start.sh <run>` (JupyterLab + Claude Code
   headless on a GPU node, runs with the laptop closed), never the user's kernel.

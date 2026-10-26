@@ -22,6 +22,9 @@ NB_PORT=$PORT
 JUPYTER_URL=http://127.0.0.1:$PORT
 JUPYTER_TOKEN=$NB_TOKEN
 ENV
+# Per-session Jupyter data dir (signature / file-id sqlite DBs): the default ~/.local/share/jupyter is NFS-shared across
+# nodes and two live servers corrupt each other's writes ("disk I/O error" on every notebook save).
+export JUPYTER_DATA_DIR=$PWD/.nb/jupyter-$NAME
 $PY/jupyter lab --no-browser --ip 127.0.0.1 --port "$PORT" \
   --IdentityProvider.token "$NB_TOKEN" --ServerApp.root_dir "$PWD" &
 JL=$!

@@ -8,3 +8,6 @@ slurm_logs/
 *.pt
 *.safetensors
 .DS_Store
+.jupyter/
+.jupyter_ystore.db
+logs/

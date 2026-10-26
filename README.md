@@ -48,12 +48,13 @@ code (`scripts/nb_start.sh` shows it); tunnels are named `aics-nb-<node number>`
 
     CLAUDE.md        how to work here (project facts + the conventions below)
     RESEARCH.md      what we currently believe, each claim pointing to its notebook/run
-    lib/             the one Python library; notebooks and scripts both import it
+    lib/             the one Python library; notebooks and scripts both import it (lib/paths.py: where things live)
     notebooks/       interactive sessions, YYYY-MM-DD_short-label.ipynb
     auto/<run>/      autoresearch runs: GOAL.md, LOG.md, notebooks/NN_YYYY-MM-DD_label.ipynb, jobs/
     scripts/         batch entry points and the session helpers (nb_start/nb_stop/auto_start/gpus)
     slurm/           sbatch files (notebook.sbatch, auto.sbatch, job.sbatch, gpu_guard.sh)
-    .nb/             (ignored) URL and token of the running notebook server
+    data/, logs/     (ignored) sidecar caches and logs; runs/ for batch outputs
+    .nb/             (ignored) URL, token and Jupyter data dir of each running notebook server
 
 ## One-shot cluster bootstrap
 
