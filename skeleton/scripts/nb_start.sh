@@ -2,7 +2,7 @@
 # Start a notebook session: submit the JupyterLab + VS Code tunnel job, wait for it, print how to attach.
 #   nb_start.sh [--name <name>] [--port <port>] [--no-tunnel]
 # Default name "current" is the interactive session the jupyter MCP server attaches to; its tunnel is
-# named aics-nb-<node number>. Other sessions get no tunnel unless --tunnel-name is given. The first job
+# named {{TUNNEL_PREFIX}}-<node number>. Other sessions get no tunnel unless --tunnel-name is given. The first job
 # on a given node asks for a one-time GitHub device login; the code is printed below.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -11,7 +11,7 @@ while [ $# -gt 0 ]; do case "$1" in
   --name) NAME=$2; shift 2;; --port) PORT=$2; shift 2;;
   --no-tunnel) TUNNEL=""; shift;; --tunnel-name) TUNNEL=$2; shift 2;;
   *) echo "unknown arg $1"; exit 1;; esac; done
-[ "$TUNNEL" = auto ] && { [ "$NAME" = current ] && TUNNEL=aics-nb || TUNNEL=""; }
+[ "$TUNNEL" = auto ] && { [ "$NAME" = current ] && TUNNEL={{TUNNEL_PREFIX}} || TUNNEL=""; }
 mkdir -p .nb slurm_logs
 ENVF=.nb/$NAME.env
 if [ -f "$ENVF" ]; then
@@ -22,7 +22,7 @@ if [ -f "$ENVF" ]; then
 fi
 scripts/gpus.sh
 TOKEN=$(python3 -c "import secrets; print(secrets.token_hex(16))")
-JOB=$(sbatch --parsable -A hewittlab --gres=gpu:1 --job-name "nb-$NAME" \
+JOB=$(sbatch --parsable -A {{SLURM_ACCOUNT}} --gres=gpu:1 --job-name "nb-$NAME" \
       --export=ALL,NB_NAME="$NAME",NB_TOKEN="$TOKEN",NB_PORT="${PORT:-0}",NB_TUNNEL="$TUNNEL" slurm/notebook.sbatch)
 echo "submitted job $JOB, waiting for the node..."
 rm -f "$ENVF"

@@ -16,8 +16,11 @@ new project would otherwise reinvent its layout. The template answers both.
 ## 2. One project is one git repo
 
 `new_project.sh` copies `skeleton/` into `~/<name>`, fills in the project name, conda env and cluster
-work dir, and makes the first commit. The repo lives in three places: the laptop (editing), GitHub
-(private), and scratch on the cluster, which is the copy where everything runs. Inside it:
+work dir, and makes the first commit. Site values (login host, Slurm account, scratch root, conda, GitHub
+user, tunnel prefix, GPU cap) come from `config.env`, an ignored file you create from `config.env.example`;
+nothing about your cluster is committed to the template. The project repo lives in three places: the
+laptop (editing), GitHub (private), and scratch on the cluster, which is the copy where everything runs.
+Inside it:
 
     CLAUDE.md        facts about this project (env, paths, model, GPU cap) and the working rules; the agent reads it first
     RESEARCH.md      what we currently believe, one line per finding, each pointing at the notebook or run that showed it
@@ -41,7 +44,7 @@ this template exists and when to reach for it.
 - **JupyterLab**, listening on localhost only, with a random token written to `.nb/current.env`;
 - a **VS Code tunnel**. The node cannot be reached from outside, but it may connect outward. The
   `code tunnel` CLI opens a long-lived connection from the node to Microsoft's relay and registers
-  under a name (`aics-nb-<node number>`). VS Code on the laptop connects to the same relay, the relay
+  under a name (`<prefix>-<node number>`). VS Code on the laptop connects to the same relay, the relay
   joins the two, and VS Code's server, and so the Claude Code extension, run on the node as if you had
   ssh'd in. A GitHub login ties both ends to you; the login token is encrypted per machine, so the
   first job on each node prints a one-time device code.
@@ -102,9 +105,13 @@ autoresearch mode with its own notebooks and log; a shared record of what is kno
 `INSTALL.md` is the step-by-step version of this section, written for an agent doing the setup, with the
 checks for each step and the pitfalls we hit.
 
+### Configure once
+
+    cp ~/research-template/config.env.example ~/research-template/config.env   # then fill it in
+
 ### Stamp a new project
 
-    ~/research-template/new_project.sh <name> [conda_env] [cluster_dir]
+    ~/research-template/new_project.sh <name> [conda_env] [cluster_dir]        # defaults: config.env's CONDA_ENV, $SCRATCH/<name>
 
 Then edit `CLAUDE.md` (project facts) and `RESEARCH.md` (what is known), create a private GitHub repo,
 push, and clone it on the cluster.
@@ -115,19 +122,20 @@ push, and clone it on the cluster.
 
 ### Cluster side, once per cluster
 
-    git clone git@github.com:lolismek/research-template /scratch/hewittlab/aij2115/research-template
-    /scratch/hewittlab/aij2115/research-template/cluster_setup.sh <project> [conda_env] [cluster_dir]
+    git clone https://github.com/lolismek/research-template $SCRATCH/research-template
+    cp ~/research-template/config.env $SCRATCH/research-template/        # same values as on the laptop
+    $SCRATCH/research-template/cluster_setup.sh <project> [conda_env] [cluster_dir]
 
 That installs, by hand if you prefer: `jupyterlab jupyter-collaboration jupyter-mcp-tools ipykernel`
-into the project env; `jupyter-mcp-server` into its own env at `/scratch/hewittlab/aij2115/envs/mcp`;
-Claude Code (`curl -fsSL https://claude.ai/install.sh | bash`); the VS Code CLI into
-`/scratch/hewittlab/aij2115/bin` (`curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" | tar xz`).
-Repos are private, so an ssh key for GitHub is needed on the cluster first. Extra Python packages go to
-`/scratch/hewittlab/aij2115/pylib` via `pip install --target`; `lib/paths.py` adds it to `sys.path`.
+into the project env; `jupyter-mcp-server` into its own env at `$SCRATCH/envs/mcp`; Claude Code
+(`curl -fsSL https://claude.ai/install.sh | bash`); the VS Code CLI into `$SCRATCH/bin`
+(`curl -sL "https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64" | tar xz`).
+Project repos are private, so an ssh key for GitHub is needed on the cluster first. Extra Python packages
+go to `$SCRATCH/pylib` via `pip install --target`; `lib/paths.py` adds it to `sys.path`.
 
 ### A session
 
-    cd /scratch/hewittlab/aij2115/<project>
+    cd $SCRATCH/<project>
     scripts/nb_start.sh            # prints the tunnel name, the JupyterLab URL, and a device code the first time on a node
 
 In VS Code: Remote-Tunnels: Connect to Tunnel (extension "Remote - Tunnels"), pick the tunnel, open the

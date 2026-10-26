@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A hewittlab
+#SBATCH -A {{SLURM_ACCOUNT}}
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=48G
@@ -9,9 +9,9 @@
 # auto/<run>/. Started by scripts/auto_start.sh, which sets RUN, NB_TOKEN. The laptop can be closed.
 cd {{CLUSTER_DIR}}
 source slurm/gpu_guard.sh
-export HF_HOME=/scratch/hewittlab/aij2115/hf_cache
+export HF_HOME={{SCRATCH}}/hf_cache
 export PATH=~/.local/bin:$PATH
-PY=~/miniforge3/envs/{{CONDA_ENV}}/bin
+PY={{CONDA_ROOT}}/envs/{{CONDA_ENV}}/bin
 NAME=auto-${RUN:?set RUN}
 PORT=$($PY/python -c "import socket; s=socket.socket(); s.bind(('',0)); print(s.getsockname()[1])")
 mkdir -p .nb

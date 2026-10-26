@@ -2,7 +2,7 @@
 from pathlib import Path
 import os, sys
 
-SCRATCH = Path("/scratch/hewittlab/aij2115")
+SCRATCH = Path("{{SCRATCH}}")
 PROJECT = Path(os.environ.get("PROJECT_DIR", "{{CLUSTER_DIR}}"))
 HF_CACHE = SCRATCH / "hf_cache"
 RUNS = PROJECT / "runs"      # batch job outputs

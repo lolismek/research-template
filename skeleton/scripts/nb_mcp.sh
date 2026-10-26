@@ -14,4 +14,4 @@ if [ "$(hostname)" != "$NB_HOST" ]; then
   echo "session '${NB_SESSION:-current}' runs on $NB_HOST, this is $(hostname); attach VS Code to its tunnel" >&2; exit 1
 fi
 export JUPYTER_URL JUPYTER_TOKEN ALLOW_IMG_OUTPUT=true
-exec /scratch/hewittlab/aij2115/envs/mcp/bin/jupyter-mcp-server --transport stdio
+exec {{SCRATCH}}/envs/mcp/bin/jupyter-mcp-server --transport stdio

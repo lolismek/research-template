@@ -3,18 +3,18 @@
 Research project stamped from `~/research-template`. Read `RESEARCH.md` before starting any work.
 
 ## Project facts
-- Cluster: Columbia AICS, `ssh aij2115@aics.cs.columbia.edu`. Work dir `{{CLUSTER_DIR}}` (this repo).
-- Conda env `{{CONDA_ENV}}` (`~/miniforge3/envs/{{CONDA_ENV}}`). HF cache `/scratch/hewittlab/aij2115/hf_cache`.
-  Extra packages not in the env go to `/scratch/hewittlab/aij2115/pylib` (`pip install --target`, home is
-  over quota); `lib.paths` puts it on `sys.path`. Paths come from `lib.paths`, never hard-coded in notebooks.
-- Slurm: `sbatch -A hewittlab --gres=gpu:1`, every job requests a GPU, partition max 24h.
-- GPU cap: 4 cards at a time across everything (notebook kernels + batch jobs). Run `scripts/gpus.sh` first.
+- Cluster: `{{CLUSTER_HOST}}` (Slurm, account `{{SLURM_ACCOUNT}}`). Work dir `{{CLUSTER_DIR}}` (this repo).
+- Conda env `{{CONDA_ENV}}` (`{{CONDA_ROOT}}/envs/{{CONDA_ENV}}`). HF cache `{{SCRATCH}}/hf_cache`.
+  Extra packages not in the env go to `{{SCRATCH}}/pylib` (`pip install --target`, home has a
+  small quota); `lib.paths` puts it on `sys.path`. Paths come from `lib.paths`, never hard-coded in notebooks.
+- Slurm: `sbatch -A {{SLURM_ACCOUNT}} --gres=gpu:1`, every job requests a GPU, partition max 24h.
+- GPU cap: {{GPU_CAP}} cards at a time across everything (notebook kernels + batch jobs). Run `scripts/gpus.sh` first.
 - Models never run on the laptop. Heavy linear algebra runs in torch on the GPU, not numpy.
 - Known hazards: see `slurm/gpu_guard.sh` (occupied or faulty cards get resubmitted).
 
 ## Three modes
 1. **Interactive notebook** (user + agent). `scripts/nb_start.sh` -> one-GPU job running JupyterLab
-   (localhost) and a VS Code tunnel `aics-nb-<node>`. The user attaches VS Code to the tunnel, so Claude Code,
+   (localhost) and a VS Code tunnel `{{TUNNEL_PREFIX}}-<node>`. The user attaches VS Code to the tunnel, so Claude Code,
    the `jupyter` MCP server (reads `.nb/current.env`), the kernel and the browser are all on that node.
    Notebooks in `notebooks/`,
    one per question, `YYYY-MM-DD_short-label.ipynb`. Cell 1 is imports + loading, run once.

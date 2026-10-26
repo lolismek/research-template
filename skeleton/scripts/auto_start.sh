@@ -9,6 +9,6 @@ RUN=${1:?usage: auto_start.sh <run>}
 mkdir -p auto/$RUN/notebooks auto/$RUN/jobs .nb slurm_logs
 scripts/gpus.sh
 TOKEN=$(python3 -c "import secrets; print(secrets.token_hex(16))")
-JOB=$(sbatch --parsable -A hewittlab --gres=gpu:1 --job-name "auto-$RUN" \
+JOB=$(sbatch --parsable -A {{SLURM_ACCOUNT}} --gres=gpu:1 --job-name "auto-$RUN" \
       --export=ALL,RUN="$RUN",NB_TOKEN="$TOKEN" slurm/auto.sbatch)
 echo "submitted autoresearch job $JOB for auto/$RUN; log: slurm_logs/auto-$RUN-$JOB.out"

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -A hewittlab
+#SBATCH -A {{SLURM_ACCOUNT}}
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=48G
@@ -11,12 +11,12 @@
 # which sets NB_NAME, NB_TOKEN, NB_PORT (0 = pick a free port), NB_TUNNEL (empty = no tunnel).
 cd {{CLUSTER_DIR}}
 source slurm/gpu_guard.sh
-export HF_HOME=/scratch/hewittlab/aij2115/hf_cache
-PY=~/miniforge3/envs/{{CONDA_ENV}}/bin
-VSC=/scratch/hewittlab/aij2115/vscode
+export HF_HOME={{SCRATCH}}/hf_cache
+PY={{CONDA_ROOT}}/envs/{{CONDA_ENV}}/bin
+VSC={{SCRATCH}}/vscode
 NODE=$(hostname -s)
 # The tunnel login token is encrypted with a machine-bound key, so each node keeps its own CLI data dir and
-# its own tunnel name (aics-nb-1, aics-nb-2, ...). First job on a node prints a GitHub device code to log in.
+# its own tunnel name (<prefix>-1, <prefix>-2, ...). First job on a node prints a GitHub device code to log in.
 export VSCODE_CLI_USE_FILE_KEYCHAIN=1
 TUNNEL_NAME=${NB_TUNNEL:+$NB_TUNNEL-${NODE##*-}}
 PORT=${NB_PORT:-0}
@@ -42,7 +42,7 @@ JL=$!
 if [ -n "${NB_TUNNEL:-}" ]; then
   echo "VS Code tunnel '$TUNNEL_NAME'"
   mkdir -p $VSC/cli-$NODE
-  /scratch/hewittlab/aij2115/bin/code tunnel --accept-server-license-terms --name "$TUNNEL_NAME" \
+  {{SCRATCH}}/bin/code tunnel --accept-server-license-terms --name "$TUNNEL_NAME" \
     --cli-data-dir $VSC/cli-$NODE --server-data-dir $VSC/server --extensions-dir $VSC/extensions &
 fi
 wait $JL

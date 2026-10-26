@@ -9,7 +9,8 @@ report a step done until its check passes.
 
 | Piece | Where | Who installs |
 |---|---|---|
-| this template | laptop `~/research-template`, GitHub `lolismek/research-template`, cluster scratch | you |
+| this template | laptop `~/research-template`, GitHub (public), cluster `$SCRATCH/research-template` | you |
+| `config.env` | next to the template on both machines, git-ignored; every site value lives here | you, from the human's answers |
 | skill `research-project` | symlink `~/.claude/skills/research-project -> <template>/skill`, both machines | you |
 | project repo | laptop `~/<name>`, GitHub private, cluster `<cluster_dir>` | you |
 | JupyterLab + collaboration + MCP tools | the project's conda env on the cluster | `cluster_setup.sh` |
@@ -24,12 +25,16 @@ report a step done until its check passes.
 ## 1. Laptop
 
 1. Clone or confirm `~/research-template`; `ln -sfn ~/research-template/skill ~/.claude/skills/research-project`.
-2. Stamp: `~/research-template/new_project.sh <name> [conda_env] [cluster_dir]`. Defaults are env
-   `sftrl` and `/scratch/hewittlab/aij2115/<name>`. Check: `grep -rn '{{' ~/<name>` prints nothing.
-3. Fill `CLAUDE.md` (project facts: topic, model, env, paths, hazards, GPU cap) and `RESEARCH.md`
+2. `cp config.env.example config.env` inside it and fill every line: login host, Slurm account and
+   partition, scratch root (absolute), conda root, default env, GitHub user, tunnel prefix, GPU cap. Ask
+   the human for what you cannot read off the cluster (`sacctmgr show assoc user=$USER`, `sinfo`, `conda info`).
+   Never commit this file; the template repo is public.
+3. Stamp: `~/research-template/new_project.sh <name> [conda_env] [cluster_dir]`. Defaults are
+   `CONDA_ENV` and `$SCRATCH/<name>` from the config. The script refuses to finish if a placeholder is left.
+4. Fill `CLAUDE.md` (project facts: topic, model, env, paths, hazards, GPU cap) and `RESEARCH.md`
    (what is already known, each line pointing at where it was shown). Ask the human for anything you
    cannot derive.
-4. `gh repo create lolismek/<name> --private --source ~/<name> --push`. Check: `git -C ~/<name> status` clean, `origin` set.
+5. `gh repo create <github-user>/<name> --private --source ~/<name> --push`. Check: `git -C ~/<name> status` clean, `origin` set.
 
 ## 2. Cluster, one-time per cluster
 
@@ -39,21 +44,22 @@ belong in home (Claude Code binary and config, ssh keys, the conda envs that are
 1. GitHub access from the cluster: if `ssh -T git@github.com` fails, `ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_github -N ""`,
    add a `Host github.com` block in `~/.ssh/config` with that `IdentityFile`, and give the public key
    to the human to add at github.com/settings/keys (title them by machine). Check: `ssh -T git@github.com` greets the user.
-2. `git clone git@github.com:lolismek/research-template /scratch/hewittlab/aij2115/research-template`
-3. `/scratch/hewittlab/aij2115/research-template/cluster_setup.sh <name> [conda_env] [cluster_dir]`.
+2. `git clone https://github.com/lolismek/research-template $SCRATCH/research-template`, then copy the laptop's
+   `config.env` next to it (scp; it is not in git).
+3. `$SCRATCH/research-template/cluster_setup.sh <name> [conda_env] [cluster_dir]`.
    It pip-installs `jupyterlab jupyter-collaboration jupyter-mcp-tools ipykernel matplotlib` into the project
    env, creates the `mcp` env on scratch with `jupyter-mcp-server`, installs Claude Code and the VS Code
    CLI, links the skill, clones the project to `<cluster_dir>`, makes `runs/ data/ slurm_logs/`.
    Checks: the project env still imports torch with CUDA (`python -c "import torch, jupyterlab, jupyter_collaboration"`),
-   `/scratch/hewittlab/aij2115/envs/mcp/bin/jupyter-mcp-server --help` works, `~/.local/bin/claude --version`,
-   `/scratch/hewittlab/aij2115/bin/code --version`.
-4. Extra Python packages the env lacks: `pip install --target /scratch/hewittlab/aij2115/pylib <pkg>`; `lib/paths.py` adds that
+   `$SCRATCH/envs/mcp/bin/jupyter-mcp-server --help` works, `~/.local/bin/claude --version`,
+   `$SCRATCH/bin/code --version`.
+4. Extra Python packages the env lacks: `pip install --target $SCRATCH/pylib <pkg>`; `lib/paths.py` adds that
    directory to `sys.path`. Never `pip install` into home.
 
 ## 3. First session (needs the human twice)
 
 1. On the login node: `cd <cluster_dir> && scripts/nb_start.sh`. It checks the GPU cap, submits the job, waits,
-   and prints: the tunnel name `aics-nb-<node>`, the JupyterLab URL, and, the first time on a node, a
+   and prints: the tunnel name `<prefix>-<node>`, the JupyterLab URL, and, the first time on a node, a
    GitHub device code. Give the code to the human (github.com/login/device). Check: `slurm_logs/nb-current-<job>.out`
    contains `Open: https://vscode.dev/tunnel/...`, or `code tunnel status` inside the job says `Connected`.
 2. `scripts/nb_check.sh` from the login node: JupyterLab answers and the MCP server lists its tools (18 at v2.2).
@@ -76,15 +82,16 @@ the laptop or the login node cannot reach the node's JupyterLab at all.
 - Two JupyterLab servers sharing the default `~/.local/share/jupyter` on NFS corrupt each other's sqlite files
   ("disk I/O error" on every save). The sbatch files set a per-session `JUPYTER_DATA_DIR` under `.nb/`.
 - `nvidia-smi` is broken on some nodes (driver/library mismatch) while CUDA works; `gpu_guard.sh` measures memory through torch.
-- Node csrtx6000-3 has a bad ECC card and is often drained. Every job must request a GPU. Partition max is 24 h.
+- Every job must request a GPU. Record node-specific hazards (bad cards, drained nodes) in the project's `CLAUDE.md`.
 - Never touch other users' processes. Stay within the project's GPU cap, counting notebook kernels.
 - Sessions, Claude Code conversations included, end with the 24 h job. Files and git survive; `claude --resume` continues.
 
 ## 5. Another cluster
 
-The template hard-codes this cluster in a few places: account `hewittlab`, user `aij2115`, scratch root
-`/scratch/hewittlab/aij2115`, conda at `~/miniforge3`, host `aics.cs.columbia.edu`, node names `csrtx6000-*`.
-They appear in `cluster_setup.sh`, `new_project.sh` defaults, `skeleton/CLAUDE.md`, `skeleton/lib/paths.py`,
-`skeleton/scripts/*.sh`, `skeleton/slurm/*`. For a new cluster, grep for them and change them in one commit,
-then re-check section 3. If the new cluster allows ssh into allocated nodes, the tunnel can be replaced by
-VS Code Remote-SSH with a ProxyJump through the login node, and `.mcp.json` works unchanged.
+Everything site-specific is a `{{PLACEHOLDER}}` in `skeleton/` filled from `config.env` at stamp time, so
+a new cluster is a new `config.env` plus a re-run of sections 2 and 3. Things that may still differ and live
+in the skeleton itself: the sbatch headers (`--gres=gpu:1`, cpus, memory, 24 h) in `skeleton/slurm/*.sbatch`,
+and the GPU-occupancy threshold in `gpu_guard.sh`. If the new cluster allows ssh into allocated nodes, the
+tunnel can be replaced by VS Code Remote-SSH with a ProxyJump through the login node, and `.mcp.json` works
+unchanged. Never commit cluster names, accounts or usernames to the template; they belong in `config.env`
+and in the private project repo's `CLAUDE.md`.
